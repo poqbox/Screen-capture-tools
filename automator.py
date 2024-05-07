@@ -11,12 +11,12 @@ from pynput.mouse import Listener as Mouse_Listener
 from pynput.mouse import Controller as Mouse_Controller
 
 log_folder = "automation_logs"
-log_directory = os.path.join(os.path.dirname(__file__), log_folder)
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
+log_dir = os.path.join(os.path.dirname(__file__), log_folder)
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 
-def start_recording(application_name, stop_recording_key=Key.esc, compress_held_keys=True, raw_file=False, save_raw_file=False, replace_existing=False):
+def start_recording(save_name, stop_recording_key=Key.esc, compress_held_keys=True, raw_file=False, save_raw_file=False, replace_existing=False):
 
     class util:
         def __init__(self):
@@ -59,37 +59,38 @@ def start_recording(application_name, stop_recording_key=Key.esc, compress_held_
         # log key
         timer.process_current_time_stamps()
         try:
-            logging.info("+{0} {1} {2}".format(key.char, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("+{0} {1} {2}".format(key.char, timer.get_timer(), timer.get_elapsed_time()))
         except AttributeError:
-            logging.info("+{0} {1} {2}".format(key, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("+{0} {1} {2}".format(key, timer.get_timer(), timer.get_elapsed_time()))
 
     def log_unkey(key):
         timer.process_current_time_stamps()
         try:
-            logging.info("-{0} {1} {2}".format(key.char, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("-{0} {1} {2}".format(key.char, timer.get_timer(), timer.get_elapsed_time()))
         except AttributeError:
-            logging.info("-{0} {1} {2}".format(key, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("-{0} {1} {2}".format(key, timer.get_timer(), timer.get_elapsed_time()))
 
     def log_click(x, y, button, pressed):
         timer.process_current_time_stamps()
         if pressed:
-            logging.info("1{0} {1},{2} {3} {4}".format(button, x, y, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("1{0} {1},{2} {3} {4}".format(button, x, y, timer.get_timer(), timer.get_elapsed_time()))
         else:
-            logging.info(("0{0} {1},{2} {3} {4}".format(button, x, y, timer.get_timer(), timer.get_elapsed_time())))
+            logger.info(("0{0} {1},{2} {3} {4}".format(button, x, y, timer.get_timer(), timer.get_elapsed_time())))
 
     def log_scroll(x, y, dx, dy):
         timer.process_current_time_stamps()
         if dy < 0:
-            logging.info("_ {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("_ {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
         else:
-            logging.info("^ {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("^ {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
         if dx < 0:
-            logging.info("< {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("< {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
         else:
-            logging.info("> {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
+            logger.info("> {0},{1} {2} {3}".format(x, y, timer.get_timer(), timer.get_elapsed_time()))
 
     # prepare file name
-    file_name = os.path.join(log_folder, application_name + ".log")
+    save_name = os.path.splitext(save_name)[0]
+    file_name = os.path.join(log_folder, save_name + ".log")
     if not replace_existing:
         file_name = account_for_duplicate_filenames(file_name)
     if is_duplicate(file_name):
@@ -239,3 +240,23 @@ def is_duplicate(file_name):
         return True
     else:
         return False
+
+
+def get_automation_logs(include_raws=False):
+    dir_list = os.listdir(log_dir)
+    log_list = [os.path.splitext(log)[0] for log in dir_list]
+    if not include_raws:
+        for i, log in enumerate(log_list):
+            if log[-4:] == "_RAW":
+                log_list.pop(i)
+    return log_list
+
+
+def delete_log(file, also_delete_raw=True):
+    file = os.path.splitext(file)[0] + ".log"
+    os.remove(os.path.join(log_dir, file))
+    if also_delete_raw:
+        raw_file = file[:-4] + "_RAW" + file[-4:]
+        if os.path.exists(os.path.join(log_dir, raw_file)):
+            os.remove(os.path.join(log_dir, raw_file))
+
