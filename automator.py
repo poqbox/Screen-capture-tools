@@ -259,4 +259,3 @@ def delete_log(file, also_delete_raw=True):
         raw_file = file[:-4] + "_RAW" + file[-4:]
         if os.path.exists(os.path.join(log_dir, raw_file)):
             os.remove(os.path.join(log_dir, raw_file))
-
