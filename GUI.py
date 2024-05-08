@@ -139,7 +139,7 @@ class HomeFrame(tkTools.Frame):
         log_deletion_button.grid_configure(row=2, column=2, sticky="E")
         log_output_textbox = tkTools.Text(self, wrap_on="word", state="disabled", text=welcome_msg)
         log_output_textbox.grid_configure(row=3, column=1, columnspan=2, sticky="NSEW")
-        log_dropdown.bind("<FocusIn>", set_log_dropdown_value())
+        log_dropdown.bind("<FocusIn>", lambda e: set_log_dropdown_value())
 
         # more widgets
         automate_button = tkTools.Button(self, display_text="Play", function_when_clicked=run_automator)
