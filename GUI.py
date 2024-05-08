@@ -76,7 +76,7 @@ class HomeFrame(tkTools.Frame):
             record_button.configure(state="normal")
 
         def run_recorder():
-            name = "test"
+            name = "log"
             automate_button.configure(state="disabled")
             log_output_textbox.output("Recording started.")
             log_output_textbox.see("end"),
