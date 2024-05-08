@@ -254,9 +254,17 @@ def get_automation_logs(include_raws=False):
     dir_list = os.listdir(log_dir)
     log_list = [os.path.splitext(log)[0] for log in dir_list]
     if not include_raws:
-        for i, log in enumerate(log_list):
+        i = 0
+        while i < len(log_list):
+            log = log_list[i]
             if log[-4:] == "_RAW":
                 log_list.pop(i)
+                continue
+            elif is_duplicate(log):
+                if log[-8:-4] == "_RAW":
+                    log_list.pop(i)
+                    continue
+            i += 1
     return log_list
 
 
