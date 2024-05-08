@@ -100,13 +100,21 @@ def start_recording(save_name, stop_recording_key=Key.esc, compress_held_keys=Tr
 
     # start recording
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename=file_name, filemode='w', format="%(message)s", level=logging.INFO)
-    timer = util()
+    logger.setLevel(logging.INFO)
+
+    recording_format = logging.Formatter("%(message)s")
+    handler = logging.FileHandler(filename=file_name)
+    handler.setFormatter(recording_format)
+    logger.addHandler(handler)
 
     with (Key_Listener(on_press=log_key, on_release=log_unkey) as k_listener,
           Mouse_Listener(on_click=log_click, on_scroll=log_scroll) as m_listener):
+        timer = util()
         k_listener.join()
         m_listener.join()
+    logger.removeHandler(handler)
+    handler.close()
+
     if not raw_file:
         log_post_processing(file_name, save_raw_file, compress_held_keys)
 
