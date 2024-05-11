@@ -272,6 +272,16 @@ def delete_log(file, also_delete_raw=True):
     file = os.path.splitext(file)[0] + ".log"
     os.remove(os.path.join(log_dir, file))
     if also_delete_raw:
-        raw_file = file[:-4] + "_RAW" + file[-4:]
-        if os.path.exists(os.path.join(log_dir, raw_file)):
-            os.remove(os.path.join(log_dir, raw_file))
+        file_raw_path = os.path.join(log_dir, file[:-4] + "_RAW" + file[-4:])
+        if os.path.exists(file_raw_path):
+            os.remove(file_raw_path)
+
+
+def rename_log(file, new_name, also_rename_raw=True):
+    file = os.path.splitext(file)[0] + ".log"
+    new_name = os.path.splitext(new_name)[0] + ".log"
+    os.rename(os.path.join(log_dir, file), os.path.join(log_dir, new_name))
+    if also_rename_raw:
+        file_raw_path = os.path.join(log_dir, file[:-4] + "_RAW" + file[-4:])
+        if os.path.exists(file_raw_path):
+            os.rename(file_raw_path, os.path.join(log_dir, new_name[:-4] + "_RAW" + new_name[-4:]))
