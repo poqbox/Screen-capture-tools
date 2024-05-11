@@ -163,12 +163,12 @@ def log_post_processing(log, save_raw_file, compress_held_keys=True):
             f.write(" ".join(data) + "\n")
 
 
-def run_automator(log, repeat_num=1, time_precision=2):
+def run_automator(log, repeat_num=1, time_precision=10):
     keyboard = Key_Controller()
     mouse = Mouse_Controller()
 
     # convert log file to strings
-    script = log_to_string(log)
+    script = log_to_string(log, time_precision=time_precision)
 
     # execute script
     for i in range(repeat_num):
