@@ -279,7 +279,10 @@ def delete_log(file, also_delete_raw=True):
 
 def rename_log(file, new_name, also_rename_raw=True):
     file = os.path.splitext(file)[0] + ".log"
-    new_name = os.path.splitext(new_name)[0] + ".log"
+    new_name = os.path.splitext(new_name)[0]
+    if not new_name:
+        new_name = "New_log"
+    new_name += ".log"
     os.rename(os.path.join(log_dir, file), os.path.join(log_dir, new_name))
     if also_rename_raw:
         file_raw_path = os.path.join(log_dir, file[:-4] + "_RAW" + file[-4:])
