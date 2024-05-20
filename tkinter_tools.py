@@ -262,7 +262,7 @@ class Button(ttk.Button):
 
 class Checkbutton(ttk.Checkbutton):
     def __init__(self, parent, display_text: str = None, display_image=None, saveValueTo_variable=None,
-                 value_when_checked=1, value_when_unchecked=0, function_when_checked=None,
+                 value_when_checked: any = 1, value_when_unchecked: any = 0, function_when_checked=None,
                  width=None, padding=None, state=None, take_focus=None, style=None, cursor_shape=None,
                  grid_column=None, grid_row=None, grid_columnspan=None, grid_rowspan=None, grid_sticky="NSEW",
                  pack_side=None, pack_anchor=None, pack_fill=None, pack_expand=None,
@@ -314,7 +314,7 @@ class Checkbutton(ttk.Checkbutton):
 
 class Combobox(ttk.Combobox):
     def __init__(self, parent, values, saveValueTo_variable=None,
-                 validation_test: Literal["none", "focus", "focusin", "focusout", "key", "all"] = "none",
+                 validate_on: Literal["none", "focus", "focusin", "focusout", "key", "all"] = "none",
                  function_for_testing_validation=None, function_when_invalid=None,
                  text_alignment=None, font=None, text_color=None, background_color=None,
                  width=None, state=None, take_focus=None, style=None, cursor_shape=None,
@@ -339,7 +339,7 @@ class Combobox(ttk.Combobox):
                          style=style,
                          takefocus=take_focus,
                          textvariable=saveValueTo_variable,
-                         validate=validation_test,
+                         validate=validate_on,
                          validatecommand=function_for_testing_validation,
                          values=values,
                          width=width
@@ -369,7 +369,7 @@ class Combobox(ttk.Combobox):
 
 class Entry(ttk.Entry):
     def __init__(self, parent, saveValueTo_variable=None,
-                 validation_test: Literal["none", "focus", "focusin", "focusout", "key", "all"] = "none",
+                 validate_on: Literal["none", "focus", "focusin", "focusout", "key", "all"] = "none",
                  function_for_testing_validation=None, function_when_invalid=None,
                  font=None, text_color=None, background_color=None,
                  width=None, state=None, take_focus=None, style=None, cursor_shape=None,
@@ -394,7 +394,7 @@ class Entry(ttk.Entry):
                          style=style,
                          takefocus=take_focus,
                          textvariable=saveValueTo_variable,
-                         validate=validation_test,
+                         validate=validate_on,
                          validatecommand=function_for_testing_validation,
                          width=width
                          )
