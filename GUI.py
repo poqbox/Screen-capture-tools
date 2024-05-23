@@ -77,7 +77,9 @@ class HomeFrame(tkTools.Frame):
             log = log_dropdown.get()
             log_output_textbox.output('Starting "' + log + '"...'),
             log_output_textbox.see("end"),
+            self.root.iconify()
             automator.run_automator(log + ".log", repeat_num=self.repeat_options_frame.repeat_times),
+            self.root.deiconify()
             log_output_textbox.output('Finished running "' + log + '"\n')
             log_output_textbox.see("end"),
             record_button.configure(state="normal")
@@ -87,7 +89,9 @@ class HomeFrame(tkTools.Frame):
             automate_button.configure(state="disabled")
             log_output_textbox.output("Recording started.")
             log_output_textbox.see("end"),
+            self.root.iconify()
             automator.start_recording(name),
+            self.root.deiconify()
             log_output_textbox.output("Recording saved.")
             log_output_textbox.see("end"),
             Editor(self.root, self, name)
