@@ -2,7 +2,7 @@ import logging
 import os.path
 import pyautogui
 import time
-from queue import Queue
+from collections import deque
 from pynput.keyboard import Key, HotKey
 from pynput.keyboard import Listener as Key_Listener
 from pynput.keyboard import Controller as Key_Controller
@@ -163,17 +163,41 @@ def log_post_processing(log, save_raw_file, compress_held_keys=True):
             f.write(" ".join(data) + "\n")
 
 
-def run_automator(log, repeat_num=1, time_precision=10):
-    keyboard = Key_Controller()
-    mouse = Mouse_Controller()
+def run_automator(log, repeat_num=1, time_precision=10, stop_key=Key.esc):
+    class IntVar:
+        def __init__(self, value: int = None): self.value = value
+        def set(self, value: int): self.value = value
+        def get(self): return self.value
+        def increment(self, increment=1): self.value += increment
+
+    def stop_automation(key):
+        try:
+            if key == stop_key:
+                key_listener.stop()
+                script_copy.clear()
+                run_num.set(repeat_num)
+        except AttributeError:
+            if key == stop_key:
+                key_listener.stop()
+                script_copy.clear()
+                run_num.value = repeat_num
 
     # convert log file to strings
     script = log_to_string(log, time_precision=time_precision)
 
+    keyboard = Key_Controller()
+    mouse = Mouse_Controller()
+    key_listener = Key_Listener(on_press=stop_automation)
+    key_listener.start()
+
     # execute script
-    for i in range(repeat_num):
-        while not script.empty():
-            exec(script.get())
+    run_num = IntVar(0)
+    while run_num.value < repeat_num:
+        script_copy = script.copy()
+        while len(script_copy) > 0:
+            exec(script_copy.popleft())
+        run_num.increment()
+    script.clear()
 
 
 def log_to_string(log, time_precision=2):
@@ -184,16 +208,16 @@ def log_to_string(log, time_precision=2):
     log = os.path.join(log_folder, log)
 
     with open(log) as f:
-        script_q = Queue()
+        script_q = deque()
         f = f.readlines()
         for line in f:
             data = list(line.split(" "))
             script_line = "time.sleep({0})".format(round(float(data[len(data) - 1]), time_precision))
-            script_q.put(script_line)
+            script_q.append(script_line)
             if len(data) > 2:
                 xy = data[1].split(",")
                 script_line = "pyautogui.moveTo({0}, {1}, _pause=False)".format(xy[0], xy[1])
-                script_q.put(script_line)
+                script_q.append(script_line)
             if data[0][0] == "+" and len(data[0]) == 2:
                 script_line = "keyboard.press('{0}')".format(data[0][1:])
             elif data[0][0] == "+":
@@ -214,7 +238,7 @@ def log_to_string(log, time_precision=2):
                 script_line = "mouse.scroll(-1, 0)"
             elif data[0][0] == ">":
                 script_line = "mouse.scroll(1, 0)"
-            script_q.put(script_line)
+            script_q.append(script_line)
         return script_q
 
 
