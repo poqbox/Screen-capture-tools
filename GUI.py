@@ -88,10 +88,9 @@ class HomeFrame(tkTools.Frame):
             log_output_textbox.output("Recording started.")
             log_output_textbox.see("end"),
             automator.start_recording(name),
-            log_output_textbox.output("Recording stopped.")
+            log_output_textbox.output("Recording saved.")
             log_output_textbox.see("end"),
-            log_output_textbox.output('Recording saved as "' + name + '"\n')
-            log_output_textbox.see("end"),
+            Editor(self.root, self, name)
             set_log_dropdown_value()
             automate_button.configure(state="normal")
 
@@ -197,6 +196,36 @@ class RepeatOptionsFrame(tkTools.Frame):
         nTimes_label1.pack_configure(side="left")
         nTimes_entry.pack_configure(side="left")
         nTimes_label2.pack_configure(side="left")
+
+
+class Editor(tkTools.SubWindow):
+    def __init__(self, root, parent, log):
+        super().__init__(parent, title="Editor", window_size=(720, 720))
+        self.root = root
+        self.parent = parent
+        self.log_name = log
+        self.grid_setup()
+        self.widgets()
+
+    def grid_setup(self):
+        self.grid_rowconfigure(0)
+        self.grid_rowconfigure(1)
+        self.grid_columnconfigure(0)
+        self.grid_columnconfigure(1)
+
+    def widgets(self):
+        name_label = tkTools.Label(self, display_text="Filename: ")
+        name_label.grid_configure(row=0, column=0, sticky="NW")
+        name_entry = tkTools.Entry(self)
+        name_entry.insert(0, self.log_name)
+        name_entry.grid_configure(row=0, column=1, sticky="NW")
+        save_button = tkTools.Button(self, display_text="Save",
+                                     function_when_clicked=lambda: [
+                                         automator.rename_log(self.log_name, name_entry.get()),
+                                         self.destroy(),
+                                         self.update()
+                                     ])
+        save_button.grid_configure(row=1, column=1)
 
 
 Root()
