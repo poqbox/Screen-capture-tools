@@ -12,13 +12,13 @@ class Root(tkTools.MainWindow):
                          )
         self.frame = None
         self.stop_key = Key.esc
-        self.grid()
+        self.grid_setup()
         self.widgets()
         self.HomeFrame = HomeFrame(self)
         self.HomeFrame.grid()
         self.mainloop()
 
-    def grid(self):
+    def grid_setup(self):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
