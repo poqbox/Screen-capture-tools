@@ -1,5 +1,6 @@
 import automator
 import tkinter_tools as tkTools
+from pynput.keyboard import Key
 
 
 class Root(tkTools.MainWindow):
@@ -10,6 +11,7 @@ class Root(tkTools.MainWindow):
                          max_size=max_size
                          )
         self.frame = None
+        self.stop_key = Key.esc
         self.grid()
         self.widgets()
         self.HomeFrame = HomeFrame(self)
@@ -33,6 +35,8 @@ class HomeFrame(tkTools.Frame):
         super().__init__(root.frame)
         self.root = root
         self.log_list = automator.get_automation_logs()
+        self.repeat_options = True
+        self.repeat_options_frame = RepeatOptionsFrame(self, self.root)
         self.grid_configure(row=0, column=0, sticky="NSEW")
         self.grid_setup()
         self.widgets()
@@ -40,9 +44,10 @@ class HomeFrame(tkTools.Frame):
     def grid_setup(self):
         self.grid_rowconfigure(0, weight=1, minsize=100)
         self.grid_rowconfigure(1, minsize=36)
-        self.grid_rowconfigure(2, weight=1, minsize=40)
-        self.grid_rowconfigure(3, weight=1)
-        self.grid_rowconfigure(4, weight=1, minsize=40)
+        self.grid_rowconfigure(2)
+        self.grid_rowconfigure(3, weight=1, minsize=40)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=1, minsize=40)
         self.grid_columnconfigure(0, weight=1, minsize=40)
         self.grid_columnconfigure(1, weight=1, minsize=100)
         self.grid_columnconfigure(2, weight=1, minsize=100)
@@ -69,10 +74,12 @@ class HomeFrame(tkTools.Frame):
                 log_output_textbox.see("end")
                 return
             record_button.configure(state="disabled")
-            log_output_textbox.output('Starting "' + log_dropdown.get() + '"...'),
+            log = log_dropdown.get()
+            log_output_textbox.output('Starting "' + log + '"...'),
             log_output_textbox.see("end"),
-            automator.run_automator(log_dropdown.get() + ".log"),
-            log_output_textbox.output('Finished running "' + log_dropdown.get() + '"\n')
+            automator.run_automator(log + ".log", repeat_num=self.repeat_options_frame.repeat_times),
+            log_output_textbox.output('Finished running "' + log + '"\n')
+            log_output_textbox.see("end"),
             record_button.configure(state="normal")
 
         def run_recorder():
@@ -136,9 +143,9 @@ class HomeFrame(tkTools.Frame):
         set_log_dropdown_value()
         log_dropdown.grid_configure(row=1, column=1, columnspan=2, sticky="NEW")
         log_deletion_button = tkTools.Button(self, display_text="delete", function_when_clicked=open_log_deletion_window)
-        log_deletion_button.grid_configure(row=2, column=2, sticky="E")
+        log_deletion_button.grid_configure(row=3, column=2, sticky="E")
         log_output_textbox = tkTools.Text(self, wrap_on="word", state="disabled", text=welcome_msg)
-        log_output_textbox.grid_configure(row=3, column=1, columnspan=2, sticky="NSEW")
+        log_output_textbox.grid_configure(row=4, column=1, columnspan=2, sticky="NSEW")
         log_dropdown.bind("<FocusIn>", lambda e: set_log_dropdown_value())
 
         # more widgets
@@ -147,7 +154,49 @@ class HomeFrame(tkTools.Frame):
         record_button = tkTools.Button(self, display_text="Rec.", function_when_clicked=run_recorder)
         record_button.grid_configure(row=0, column=2, sticky="E")
         settings_button = tkTools.Button(self, display_text="Settings")
-        settings_button.grid_configure(row=4, column=2, sticky="SE")
+        settings_button.grid_configure(row=5, column=2, sticky="SE")
+        if self.repeat_options:
+            self.repeat_options_frame.grid_configure(row=2, column=1, columnspan=2, sticky="NSEW")
+
+
+# Frame with options for repeating automations
+class RepeatOptionsFrame(tkTools.Frame):
+    def __init__(self, parent, root):
+        super().__init__(parent)
+        self.root = root
+        self.parent = parent
+        self.repeat_times = 1
+        self.grid_setup()
+        self.widgets()
+
+    def grid_setup(self):
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_remove()
+
+    def widgets(self):
+        def isdigit_callback(value):
+            if str.isdigit(value) or value == "":
+                return True
+            return False
+
+        def set_repeat_times():
+            if nTimes_entry.get() == "":
+                nTimes_entry.insert(0, "1")
+            self.repeat_times = int(nTimes_entry.get())
+
+        isdigit_cmd = self.register(isdigit_callback)
+
+        nTimes_frame = tkTools.Frame(self)
+        nTimes_frame.grid_configure(row=0, column=0, sticky="NSEW")
+        nTimes_label1 = tkTools.Label(nTimes_frame, display_text="Repeat ")
+        nTimes_label2 = tkTools.Label(nTimes_frame, display_text=" times")
+        nTimes_entry = tkTools.Entry(nTimes_frame, width=4, validate_on="key", function_for_testing_validation=(isdigit_cmd, "%P"))
+        nTimes_entry.insert(0, "1")
+        nTimes_entry.bind("<FocusOut>", lambda e: set_repeat_times())
+        nTimes_label1.pack_configure(side="left")
+        nTimes_entry.pack_configure(side="left")
+        nTimes_label2.pack_configure(side="left")
 
 
 Root()
