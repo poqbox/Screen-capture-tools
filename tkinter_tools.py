@@ -4,7 +4,7 @@ from typing import Literal
 
 
 class MainWindow(tkinter.Tk):
-    def __init__(self, title: str, window_size, min_size=None, max_size=None,
+    def __init__(self, title: str, window_size, min_size=None, max_size=None, position=None,
                  resizable_width=True, resizable_height=True):
         """
         Everything will be created within this object\n
@@ -14,10 +14,15 @@ class MainWindow(tkinter.Tk):
         # extends functionality from tkinter.Tk
         super().__init__()
         self.title(title)
+        if position:
+            if isinstance(position, str):
+                position = "+" + position
+            else:
+                position = "+" + "+".join(str(_) for _ in position[0:2])
         if isinstance(window_size, str):
-            self.geometry(window_size)
+            self.geometry(window_size + position)
         else:
-            self.geometry("x".join(str(_) for _ in window_size[0:2]))
+            self.geometry("x".join(str(_) for _ in window_size[0:2]) + position)
         if min_size:
             if isinstance(min_size, str):
                 xy = min_size.split("x")
@@ -37,7 +42,7 @@ Tk = MainWindow
 
 
 class SubWindow(tkinter.Toplevel):
-    def __init__(self, parent, title: str, window_size, min_size=None, max_size=None,
+    def __init__(self, parent, title: str, window_size, min_size=None, max_size=None, position=None,
                  resizable_width=True, resizable_height=True,
                  background_color=None, cursor_shape=None, pad_x=None, pad_y=None):
         """Creates a window over the parent window"""
@@ -50,10 +55,16 @@ class SubWindow(tkinter.Toplevel):
                          pady=pad_y
                          )
         self.title(title)
+        if position:
+            if isinstance(position, str):
+                position = position.replace(",", "+")
+                position = "+" + position
+            else:
+                position = "+" + "+".join(str(_) for _ in position[0:2])
         if isinstance(window_size, str):
-            self.geometry(window_size)
+            self.geometry(window_size + position)
         else:
-            self.geometry("x".join(str(_) for _ in window_size[0:2]))
+            self.geometry("x".join(str(_) for _ in window_size[0:2]) + position)
         if min_size:
             if isinstance(min_size, str):
                 xy = min_size.split("x")

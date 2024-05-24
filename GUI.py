@@ -4,11 +4,12 @@ from pynput.keyboard import Key
 
 
 class Root(tkTools.MainWindow):
-    def __init__(self, title="Screen capture tools", window_size=(360, 360), min_size=(360, 360), max_size=(720, 760)):
+    def __init__(self, title="Screen capture tools", window_size=(360, 360), min_size=(360, 360), max_size=(720, 760), position=(0, 0)):
         super().__init__(title=title,
                          window_size=window_size,
                          min_size=min_size,
-                         max_size=max_size
+                         max_size=max_size,
+                         position=position
                          )
         self.frame = None
         self.stop_key = Key.esc
@@ -223,7 +224,7 @@ class RepeatOptionsFrame(tkTools.Frame):
 
 class Editor(tkTools.SubWindow):
     def __init__(self, root, parent, log):
-        super().__init__(parent, title="Editor", window_size=(360, 120))
+        super().__init__(parent, title="Editor", window_size=(360, 120), position=(root.winfo_x(), root.winfo_y()))
         self.root = root
         self.parent = parent
         self.log_name = log
