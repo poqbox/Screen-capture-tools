@@ -157,9 +157,9 @@ class HomeFrame(tkTools.Frame):
         # first initialize the log-fetching widgets so that they can be referenced with other buttons
         welcome_msg = ("Hi!\n"
                        "This tool can be used to automate mouse clicks and key presses.\n"
-                       "To do so, start by clicking the button on the top right. Once clicked, the program will begin "
-                       "to record your mouse clicks and key presses. You can click the ESC key to stop the recording.\n"
-                       "To replay a recording, click the button on the top left.\n\n")
+                       "To do so, start by clicking the button on the top right. Once clicked, the program will "
+                       "begin to record your mouse clicks and key presses. Use the ESC key to stop the recording.\n"
+                       "To run a recording, click the button on the top left. The ESC key will stop the playback.\n\n")
         log_dropdown = tkTools.Combobox(self, values=self.log_list, font=("Consolas", 10))
         no_logs_label = tkTools.Label(self, display_text="No logs found", text_color="red", text_alignment="left")
         set_log_dropdown_value()
@@ -223,7 +223,7 @@ class RepeatOptionsFrame(tkTools.Frame):
 
 class Editor(tkTools.SubWindow):
     def __init__(self, root, parent, log):
-        super().__init__(parent, title="Editor", window_size=(720, 720))
+        super().__init__(parent, title="Editor", window_size=(360, 120))
         self.root = root
         self.parent = parent
         self.log_name = log
