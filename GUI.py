@@ -74,41 +74,47 @@ class HomeFrame(tkTools.Frame):
                     log_output_textbox.output("There are no logs to automate.")
                     log_output_textbox.see("end")
                     return
+                automate_button.configure(state="disabled")
                 record_button.configure(state="disabled")
                 log = log_dropdown.get()
+                log_dropdown.configure(state="disabled")
                 log_output_textbox.output('Starting "' + log + '"...'),
                 log_output_textbox.see("end"),
                 self.root.iconify()
-                func()
+                func(log)
                 self.root.deiconify()
                 log_output_textbox.output('Finished running "' + log + '"\n')
                 log_output_textbox.see("end"),
+                log_dropdown.configure(state="normal")
                 record_button.configure(state="normal")
+                automate_button.configure(state="normal")
             return wrapper
 
         @run_automator_decor
-        def run_automator():
-            automator.run_automator(log_dropdown.get() + ".log", repeat_num=self.repeat_options_frame.repeat_times),
+        def run_automator(log):
+            automator.run_automator(log + ".log", repeat_num=self.repeat_options_frame.repeat_times),
 
         def run_recorder_decor(func):
             def wrapper():
                 name = "log"
+                record_button.configure(state="disabled")
                 automate_button.configure(state="disabled")
                 log_output_textbox.output("Recording started.")
                 log_output_textbox.see("end"),
                 self.root.iconify()
-                func()
+                func(name)
                 self.root.deiconify()
                 log_output_textbox.output("Recording saved.")
                 log_output_textbox.see("end"),
                 Editor(self.root, self, name)
+                log_dropdown.configure(state="normal")
                 set_log_dropdown_value()
                 automate_button.configure(state="normal")
+                record_button.configure(state="normal")
             return wrapper
 
         @run_recorder_decor
-        def run_recorder():
-            name = "log"
+        def run_recorder(name):
             automator.start_recording(name),
 
         def open_log_deletion_window():
