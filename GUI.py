@@ -172,7 +172,7 @@ class HomeFrame(tkTools.Frame):
 
         # more widgets
         automate_button = tkTools.Button(self, display_text="Play", function_when_clicked=run_automator)
-        automate_button.grid_configure(row=0, column=1, sticky="W")
+        automate_button.grid_configure(row=0, column=1)
         record_button = tkTools.Button(self, display_text="Rec.", function_when_clicked=run_recorder)
         record_button.grid_configure(row=0, column=2, sticky="E")
         settings_button = tkTools.Button(self, display_text="Settings")
